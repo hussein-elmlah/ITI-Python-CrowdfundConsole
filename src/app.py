@@ -11,12 +11,13 @@ class User:
         self.phone = phone
 
 class Project:
-    def __init__(self, title, details, target_amount, start_date, end_date):
+    def __init__(self, title, details, target_amount, start_date, end_date, owner):
         self.title = title
         self.details = details
         self.target_amount = target_amount
         self.start_date = start_date
         self.end_date = end_date
+        self.owner = owner
 
 class CrowdFundingApp:
     def __init__(self):
@@ -32,6 +33,9 @@ class CrowdFundingApp:
         email = input("Enter your email: ")
         if not self.validate_email(email):
             print("Invalid email format.")
+            return
+        if self.is_email_unique(email):
+            print("Email already exists. Please choose a different email.")
             return
         password = input("Enter your password: ")
         confirm_password = input("Confirm your password: ")
@@ -69,6 +73,9 @@ class CrowdFundingApp:
 
         print("Create Project")
         title = input("Enter project title: ")
+        if not self.is_title_unique(title):
+            print("Project with the same title already exists. Please choose a different title.")
+            return
         details = input("Enter project details: ")
         target_amount = input("Enter target amount: ")
         start_date = input("Enter start date (YYYY-MM-DD): ")
@@ -80,10 +87,94 @@ class CrowdFundingApp:
             print("Invalid date format.")
             return
 
-        project = Project(title, details, target_amount, start_date, end_date)
+        project = Project(title, details, target_amount, start_date, end_date, self.logged_in_user.email)
         self.projects.append(project)
-        print("Project created successfully.")
         self.save_data()
+        print("Project created successfully.")
+
+    def edit_project(self):
+        if not self.logged_in_user:
+            print("Please login first.")
+            return
+
+        print("Edit Project")
+        title = input("Enter project title to edit: ")
+        found_project = self.find_project(title)
+        if found_project is None:
+            print("Project not found.")
+            return
+
+        if found_project.owner != self.logged_in_user.email:
+            print("You are not authorized to edit this project.")
+            return
+
+        new_title = input("Enter new project title: ")
+        if new_title != title and not self.is_title_unique(new_title):
+            print("Project with the same title already exists. Please choose a different title.")
+            return
+
+        details = input("Enter new project details: ")
+        target_amount = input("Enter new target amount: ")
+        start_date = input("Enter new start date (YYYY-MM-DD): ")
+        if not self.validate_date(start_date):
+            print("Invalid date format.")
+            return
+        end_date = input("Enter new end date (YYYY-MM-DD): ")
+        if not self.validate_date(end_date):
+            print("Invalid date format.")
+            return
+
+        found_project.title = new_title
+        found_project.details = details
+        found_project.target_amount = target_amount
+        found_project.start_date = start_date
+        found_project.end_date = end_date
+        self.save_data()
+        print("Project edited successfully.")
+
+    def delete_project(self):
+        if not self.logged_in_user:
+            print("Please login first.")
+            return
+
+        print("Delete Project")
+        title = input("Enter project title to delete: ")
+        found_project = self.find_project(title)
+        if found_project is None:
+            print("Project not found.")
+            return
+
+        if found_project.owner != self.logged_in_user.email:
+            print("You are not authorized to delete this project.")
+            return
+
+        self.projects.remove(found_project)
+        print("Project deleted successfully.")
+        self.save_data()
+
+    def search_projects_by_date(self, date):
+        found_projects = [project for project in self.projects if project.start_date == date or project.end_date == date]
+        if found_projects:
+            print("Found projects:")
+            for project in found_projects:
+                print(f"Title: {project.title}, Details: {project.details}, Target Amount: {project.target_amount}, Start Date: {project.start_date}, End Date: {project.end_date}")
+        else:
+            print("No projects found for the specified date.")
+
+    def search_projects_by_title(self, title):
+        found_projects = [project for project in self.projects if project.title.lower() == title.lower()]
+        if found_projects:
+            print("Found projects:")
+            for project in found_projects:
+                print(f"Title: {project.title}, Details: {project.details}, Target Amount: {project.target_amount}, Start Date: {project.start_date}, End Date: {project.end_date}")
+        else:
+            print("No projects found with the specified title.")
+
+    def find_project(self, title):
+        for project in self.projects:
+            if project.title.lower() == title.lower():
+                return project
+        return None
 
     def view_projects(self):
         print("Projects")
@@ -110,8 +201,15 @@ class CrowdFundingApp:
         except FileNotFoundError:
             pass
 
+    # Validation functions
     def validate_email(self, email):
         return re.match(r'^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$', email)
+    
+    def is_email_unique(self, email):
+        for user in self.users:
+            if user.email == email:
+                return True
+        return False
 
     def validate_password(self, password, confirm_password):
         return password == confirm_password and len(password) >= 6
@@ -126,6 +224,12 @@ class CrowdFundingApp:
         except ValueError:
             return False
 
+    def is_title_unique(self, title):
+        for project in self.projects:
+            if project.title.lower() == title.lower():
+                return False
+        return True
+
 # Main function
 def main():
     app = CrowdFundingApp()
@@ -135,8 +239,12 @@ def main():
         print("1. Register")
         print("2. Login")
         print("3. Create Project")
-        print("4. View Projects")
-        print("5. Exit")
+        print("4. Edit Project")
+        print("5. Delete Project")
+        print("6. View Projects")
+        print("7. Search Projects by Date")
+        print("8. Search Projects by Title")
+        print("9. Exit")
 
         choice = input("Enter your choice: ")
 
@@ -147,8 +255,18 @@ def main():
         elif choice == "3":
             app.create_project()
         elif choice == "4":
-            app.view_projects()
+            app.edit_project()
         elif choice == "5":
+            app.delete_project()
+        elif choice == "6":
+            app.view_projects()
+        elif choice == "7":
+            date = input("Enter date (YYYY-MM-DD): ")
+            app.search_projects_by_date(date)
+        elif choice == "8":
+            title = input("Enter project title: ")
+            app.search_projects_by_title(title)
+        elif choice == "9":
             print("Exiting...")
             break
         else:
