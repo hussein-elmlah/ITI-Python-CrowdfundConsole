@@ -152,10 +152,17 @@ class CrowdFundingApp:
         print("Project deleted successfully.")
         self.save_data()
 
+    def view_projects(self):
+        print("\nProjects")
+        print("========")
+        for project in self.projects:
+            print(f"Title: {project.title}, Details: {project.details}, Target Amount: {project.target_amount}, Start Date: {project.start_date}, End Date: {project.end_date}")
+
     def search_projects_by_date(self, date):
-        found_projects = [project for project in self.projects if project.start_date == date or project.end_date == date]
+        found_projects = [project for project in self.projects if project.start_date <= date and project.end_date >= date]
         if found_projects:
-            print("Found projects:")
+            print("\nFound projects:")
+            print("==============")
             for project in found_projects:
                 print(f"Title: {project.title}, Details: {project.details}, Target Amount: {project.target_amount}, Start Date: {project.start_date}, End Date: {project.end_date}")
         else:
@@ -164,7 +171,8 @@ class CrowdFundingApp:
     def search_projects_by_title(self, title):
         found_projects = [project for project in self.projects if project.title.lower() == title.lower()]
         if found_projects:
-            print("Found projects:")
+            print("\nFound projects:")
+            print("==============")
             for project in found_projects:
                 print(f"Title: {project.title}, Details: {project.details}, Target Amount: {project.target_amount}, Start Date: {project.start_date}, End Date: {project.end_date}")
         else:
@@ -175,11 +183,6 @@ class CrowdFundingApp:
             if project.title.lower() == title.lower():
                 return project
         return None
-
-    def view_projects(self):
-        print("Projects")
-        for project in self.projects:
-            print(f"Title: {project.title}, Details: {project.details}, Target Amount: {project.target_amount}, Start Date: {project.start_date}, End Date: {project.end_date}")
 
     def save_data(self):
         with open('users.json', 'w') as f:
