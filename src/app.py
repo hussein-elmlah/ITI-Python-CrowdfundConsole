@@ -30,28 +30,30 @@ class CrowdFundingApp:
         first_name = input("Enter your first name: ")
         last_name = input("Enter your last name: ")
         email = input("Enter your email: ")
-        password = input("Enter your password: ")
-        confirm_password = input("Confirm your password: ")
-        phone = input("Enter your phone number: ")
-        
         if not self.validate_email(email):
             print("Invalid email format.")
             return
+        password = input("Enter your password: ")
+        confirm_password = input("Confirm your password: ")
         if not self.validate_password(password, confirm_password):
             print("Invalid password or password mismatch.")
             return
+        phone = input("Enter your phone number: ")
         if not self.validate_phone(phone):
             print("Invalid phone number format.")
-            return
+            return       
         
         user = User(first_name, last_name, email, password, phone)
         self.users.append(user)
-        print("Registration successful.")
         self.save_data()
+        print("Registration successful.")
 
     def login_user(self):
         print("Login")
         email = input("Enter your email: ")
+        if not self.validate_email(email):
+            print("Invalid email format.")
+            return
         password = input("Enter your password: ")
         for user in self.users:
             if user.email == email and user.password == password:
@@ -70,9 +72,11 @@ class CrowdFundingApp:
         details = input("Enter project details: ")
         target_amount = input("Enter target amount: ")
         start_date = input("Enter start date (YYYY-MM-DD): ")
+        if not self.validate_date(start_date):
+            print("Invalid date format.")
+            return
         end_date = input("Enter end date (YYYY-MM-DD): ")
-
-        if not self.validate_date(start_date) or not self.validate_date(end_date):
+        if not self.validate_date(end_date):
             print("Invalid date format.")
             return
 
