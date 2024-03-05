@@ -30,6 +30,22 @@ class CrowdFundingApp:
         if not self.logged_in_user:
             print("Please login first.")
             return
+        
+    def validate_email(self, email):
+        return re.match(r'^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$', email)
+
+    def validate_password(self, password, confirm_password):
+        return password == confirm_password and len(password) >= 6
+
+    def validate_phone(self, phone):
+        return re.match(r'^01[0-2]\d{8}$', phone)
+
+    def validate_date(self, date_str):
+        try:
+            datetime.strptime(date_str, '%Y-%m-%d')
+            return True
+        except ValueError:
+            return False
 
 # Main function
 def main():
