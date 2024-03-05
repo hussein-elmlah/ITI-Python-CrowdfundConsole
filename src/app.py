@@ -67,8 +67,7 @@ class CrowdFundingApp:
         print("Invalid email or password.")
 
     def create_project(self):
-        if not self.logged_in_user:
-            print("Please login first.")
+        if not self.authenticate_user():
             return
 
         print("Create Project")
@@ -93,8 +92,7 @@ class CrowdFundingApp:
         print("Project created successfully.")
 
     def edit_project(self):
-        if not self.logged_in_user:
-            print("Please login first.")
+        if not self.authenticate_user():
             return
 
         print("Edit Project")
@@ -104,8 +102,7 @@ class CrowdFundingApp:
             print("Project not found.")
             return
 
-        if found_project.owner != self.logged_in_user.email:
-            print("You are not authorized to edit this project.")
+        if not self.authorize_user(found_project):
             return
 
         new_title = input("Enter new project title: ")
@@ -133,8 +130,7 @@ class CrowdFundingApp:
         print("Project edited successfully.")
 
     def delete_project(self):
-        if not self.logged_in_user:
-            print("Please login first.")
+        if not self.authenticate_user():
             return
 
         print("Delete Project")
@@ -144,8 +140,7 @@ class CrowdFundingApp:
             print("Project not found.")
             return
 
-        if found_project.owner != self.logged_in_user.email:
-            print("You are not authorized to delete this project.")
+        if not self.authorize_user(found_project):
             return
 
         self.projects.remove(found_project)
@@ -178,32 +173,6 @@ class CrowdFundingApp:
         else:
             print("No projects found with the specified title.")
 
-    def find_project(self, title):
-        for project in self.projects:
-            if project.title.lower() == title.lower():
-                return project
-        return None
-
-    def save_data(self):
-        with open('users.json', 'w') as f:
-            json.dump([vars(user) for user in self.users], f)
-        with open('projects.json', 'w') as f:
-            json.dump([vars(project) for project in self.projects], f)
-
-    def load_data(self):
-        try:
-            with open('users.json', 'r') as f:
-                user_data = json.load(f)
-                self.users = [User(**user) for user in user_data]
-        except FileNotFoundError:
-            pass
-        try:
-            with open('projects.json', 'r') as f:
-                project_data = json.load(f)
-                self.projects = [Project(**project) for project in project_data]
-        except FileNotFoundError:
-            pass
-
     # Validation functions
     def validate_email(self, email):
         return re.match(r'^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$', email)
@@ -232,6 +201,62 @@ class CrowdFundingApp:
             if project.title.lower() == title.lower():
                 return False
         return True
+
+    # helper functions
+    def find_project(self, title):
+        for project in self.projects:
+            if project.title.lower() == title.lower():
+                return project
+        return None
+    
+    # authoentication and authorization
+    def authenticate_user(self):
+        if not self.logged_in_user:
+            print("Please login first.")
+            return False
+        return True
+
+    def authorize_user(self, project):
+        if project.owner != self.logged_in_user.email:
+            print("You are not authorized.")
+            return False
+        return True
+    
+    # Save and load data methods
+    def save_data(self):
+        try:
+            with open('users.json', 'w') as f:
+                json.dump([vars(user) for user in self.users], f)
+            with open('projects.json', 'w') as f:
+                json.dump([vars(project) for project in self.projects], f)
+        except IOError as e:
+            print(f"Error saving data: {e}")
+        except Exception as e:
+            print(f"Unexpected error occurred: {e}")
+
+    def load_data(self):
+        try:
+            with open('users.json', 'r') as f:
+                user_data = json.load(f)
+                self.users = [User(**user) for user in user_data]
+        except FileNotFoundError:
+            pass
+        except IOError as e:
+            print(f"Error loading user data: {e}")
+        except Exception as e:
+            print(f"Unexpected error occurred: {e}")
+
+        try:
+            with open('projects.json', 'r') as f:
+                project_data = json.load(f)
+                self.projects = [Project(**project) for project in project_data]
+        except FileNotFoundError:
+            pass
+        except IOError as e:
+            print(f"Error loading project data: {e}")
+        except Exception as e:
+            print(f"Unexpected error occurred: {e}")
+
 
 # Main function
 def main():
