@@ -1,18 +1,18 @@
 [
-    {
-        "title": "Project A",
-        "details": "Details of Project A",
-        "target_amount": 100000,
-        "start_date": "2024-03-01",
-        "end_date": "2025-04-01",
-        "owner": "hussein@gmail.com"
-    },
-    {
-        "title": "Project B",
-        "details": "Details of Project B",
-        "target_amount": 200000,
-        "start_date": "2024-04-15",
-        "end_date": "2026-04-15",
-        "owner": "ahmed@gmail.com"
-    }
+  {
+    "title": "Project A",
+    "details": "Details of Project A",
+    "target_amount": 100000,
+    "start_date": "2024-03-01",
+    "end_date": "2025-04-01",
+    "owner": "hussein@gmail.com"
+  },
+  {
+    "title": "Project B",
+    "details": "Details of Project B",
+    "target_amount": 200000,
+    "start_date": "2024-04-15",
+    "end_date": "2026-04-15",
+    "owner": "ahmed@gmail.com"
+  }
 ]

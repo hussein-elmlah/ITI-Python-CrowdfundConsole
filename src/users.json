@@ -1,16 +1,1 @@
-[
-    {
-        "first_name": "Hussein",
-        "last_name": "Elmlah",
-        "email": "hussein@example.com",
-        "password": "hussein123",
-        "phone": "01012345678"
-    },
-    {
-        "first_name": "Ahmed",
-        "last_name": "Ali",
-        "email": "ahmed@example.com",
-        "password": "ahmed123",
-        "phone": "01123456789"
-    }
-]
+[{"first_name": "Hussein", "last_name": "Elmlah", "email": "hussein@example.com", "password": "hussein123", "phone": "01012345678"}, {"first_name": "Ahmed", "last_name": "Ali", "email": "ahmed@example.com", "password": "ahmed123", "phone": "01123456789"}, {"first_name": "Hussein", "last_name": "Elmlah", "email": "hussein123@gmail.com", "password": "hussein12345", "phone": "01019747437"}]
