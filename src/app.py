@@ -94,7 +94,7 @@ class CrowdFundingApp:
 
     def load_data(self):
         try:
-            with open('\users.json', 'r') as f:
+            with open('users.json', 'r') as f:
                 user_data = json.load(f)
                 self.users = [User(**user) for user in user_data]
         except FileNotFoundError:
